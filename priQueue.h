@@ -93,3 +93,9 @@ public:
         return head == nullptr;
     }
 };
+
+template<typename T>
+class Der_priQueue : public priQueue<T>
+{
+
+};
