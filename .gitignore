@@ -27,6 +27,33 @@
 *.lib
 
 # Executables
+*
 *.exe
 *.out
 *.app
+
+# CMake build directories
+build/
+cmake-build-debug/
+cmake-build-release/
+CMakeCache.txt
+CMakeFiles/
+
+# CMake temporary files
+Testing/
+Makefile
+cmake_install.cmake
+CTestTestfile.cmake
+
+# Editor-specific files
+.idea/
+.vscode/
+*.swp
+*.suo
+*.user
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
