@@ -1,0 +1,37 @@
+#pragma once
+#include<iostream>
+#include"Patient.h"
+#include"LinkedQueue.h"
+#include"priQueue.h"
+#include "Car.h"
+using namespace std;
+
+class Hospital
+{
+private:
+    priQueue<Patient*> ER;
+    LinkedQueue<Patient*> SR;
+    CancelQueue<Patient*> NR;
+    LinkedQueue<Car*> Scars;
+    LinkedQueue<Car*> Ncars;
+    
+public:
+    Hospital();     
+    // constructor should create an empty queue for each of the data members
+    // ex: ER = PriQueue<Patient*>();
+    void add_request(Patient* const patient_ptr, char patient_type[2]) const;//should use the Enqueue method of crosponding patient type list
+    void add_free_car(Car* const car_ptr, char car_type) const;//should use the Enqueue method of crossponding car type list
+    
+    Patient* peek_request(char patient_type[2]);   // should use peek method
+    Car* peek_available_car(char car_type);
+    
+    Patient* remove_request(char patient_type[2]); // should use dequeue method
+    Car* remove_available_car(char car_type);
+
+
+};
+
+Hospital::Hospital()
+{
+    ER = priQueue<Patient*>();
+}
