@@ -264,6 +264,6 @@ LinkedQueue<T>::LinkedQueue(const LinkedQueue<T> & LQ)
 #endif
 
 template < typename T>
-class CancelQueue :private LinkedQueue<T>{
+class CancelQueue :public LinkedQueue<T>{
 	
 };
