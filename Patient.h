@@ -13,15 +13,15 @@ private:
         cancel_time,    // should initially be -1 
         hospitalID, 
         patientID;
-    char patient_type[2]; // Values range from only {SP, EP, NP} 
+    string patient_type; // Values range from only {SP, EP, NP} 
     
 public:
     Patient();
-    Patient(char P_type[2], int request_time, int patient_ID, int requested_hospital, int distance);
-    void set_type(char P_type[2]);
+    Patient(string P_type, int request_time, int patient_ID, int requested_hospital, int distance);
+    void set_type(string P_type);
     void request(int time);
     void set_distance(int distance);
-    void set_ID();
+    void set_ID(int ID);
     void request_hospital(int hospital_ID); 
     void set_case_severity(int severity);
 
@@ -51,7 +51,67 @@ public:
     string get_patient_type() const { return patient_type; }
 };
 
-Patient::Patient(/* args */)
+Patient::Patient()
 {
+    request_time = 0;
+    pick_time = 0;
+    dist = 0;
+    wait_time = 0;
+    finish_time = 0;
+    case_severity = -1;
+    cancel_time = -1;
+    hospitalID = 0;
+    patientID = 1;
+    patient_type = "";
+}
 
+Patient::Patient(string P_type, int request_time, int patient_ID, int requested_hospital, int distance)
+{
+    this->request_time = request_time;
+    pick_time = 0;
+    dist = distance;
+    wait_time = 0;
+    finish_time = 0;
+    case_severity = -1;
+    cancel_time = -1;
+    hospitalID = requested_hospital;
+    patientID = patient_ID;
+    patient_type = P_type;
+}
+
+
+void Patient::set_type(string P_type) {
+    if (P_type == "SP" || P_type == "EP" || P_type == "NP") {
+        patient_type = P_type;
+    } else {
+        cout << "Invalid patient type. you should use SP, EP, or NP.";
+    }
+}
+
+void Patient::request(int time) {
+    if (time >= 0) {
+        request_time = time;
+    } else {
+        cout << "Invalid request time.";
+    }
+}
+
+void Patient::set_distance(int distance) {
+    if (distance >= 0) {
+        dist = distance;
+    } else {
+        cout << "Invalid distance.";
+    }
+}
+
+void Patient::set_ID(int ID) {
+    patientID = ID;
+}
+
+void Patient::request_hospital(int hospital_ID) {
+    if (hospital_ID >= 0) {
+        hospitalID = hospital_ID;
+    } else {
+        cout << "Invalid hospital ID.";
+    }
 }

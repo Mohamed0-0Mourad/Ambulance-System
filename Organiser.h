@@ -40,7 +40,7 @@ void Organiser::load_file(string file_name){
         hospitals[i].set_cars(normal_speed, special_speed, special_cars, normal_cars);
     }
     int numOfRequest; test>>numOfRequest;
-    char patient_type[2]; int request_time, PID, HID, dist, severity;
+    string patient_type; int request_time, PID, HID, dist, severity;
     while (numOfRequest--){
         test >> patient_type>>request_time>>PID>>HID>>dist;
         Patient* new_request = new Patient(patient_type, request_time, PID, HID, dist);

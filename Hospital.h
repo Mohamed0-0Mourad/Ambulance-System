@@ -19,13 +19,13 @@ public:
     Hospital();     
     // constructor should create an empty queue for each of the data members
     // ex: ER = PriQueue<Patient*>();
-    void add_request(Patient* const patient_ptr, char patient_type[2]);//should use the Enqueue method of crosponding patient type list
+    void add_request(Patient* const patient_ptr, string patient_type);//should use the Enqueue method of crosponding patient type list
     void add_free_car(Car* const car_ptr, char car_type);//should use the Enqueue method of crossponding car type list
     
-    Patient* peek_request(char patient_type[2])const;   // should use peek method
+    Patient* peek_request(string patient_type)const;   // should use peek method
     Car* peek_available_car(char car_type)const;
     
-    Patient* remove_request(char patient_type[2]); // should use dequeue method
+    Patient* remove_request(string patient_type); // should use dequeue method
     Car* remove_available_car(char car_type);
 
     void set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC);
