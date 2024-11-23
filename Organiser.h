@@ -39,6 +39,14 @@ void Organiser::load_file(string file_name){
         test>>special_cars>>normal_cars;
         hospitals[i].set_cars(normal_speed, special_speed, special_cars, normal_cars);
     }
+    int numOfRequest; test>>numOfRequest;
+    char patient_type[2]; int request_time, PID, HID, dist, severity;
+    while (numOfRequest--){
+        test >> patient_type>>request_time>>PID>>HID>>dist;
+        Patient* new_request = new Patient(patient_type, request_time, PID, HID, dist);
+        if(patient_type=="EP"){test>>severity; new_request->set_case_severity(severity);}
+        hospitals[HID].add_request(new_request, patient_type);
+    }
     test.close();
 }
 
