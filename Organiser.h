@@ -32,7 +32,7 @@ Organiser::Organiser(){
 void Organiser::load_file(string file_name){
     int normal_speed, special_speed;
     ifstream test(file_name);
-    test >> numOf_hospitals >> normal_speed >> special_speed;
+    test >> numOf_hospitals >> special_speed >> normal_speed;
     hospitals = new Hospital[numOf_hospitals];
     for(int i{0}; i < numOf_hospitals; i++){
         int special_cars, normal_cars;
@@ -43,7 +43,7 @@ void Organiser::load_file(string file_name){
 }
 
 Organiser::~Organiser(){
-    delete hospitals;
+    delete[] hospitals;
     out_cars.~Der_priQueue();
     back_cars.~priQueue();
     finished_requests.~LinkedQueue();
