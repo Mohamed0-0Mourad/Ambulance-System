@@ -22,8 +22,8 @@ public:
     void add_request(Patient* const patient_ptr, char patient_type[2]);//should use the Enqueue method of crosponding patient type list
     void add_free_car(Car* const car_ptr, char car_type);//should use the Enqueue method of crossponding car type list
     
-    Patient* peek_request(char patient_type[2]);   // should use peek method
-    Car* peek_available_car(char car_type);
+    Patient* peek_request(char patient_type[2])const;   // should use peek method
+    Car* peek_available_car(char car_type)const;
     
     Patient* remove_request(char patient_type[2]); // should use dequeue method
     Car* remove_available_car(char car_type);
