@@ -62,7 +62,7 @@ public:
         }
        
         priNode<T>* current = head;        
-        while (current->getNext() && priority <= current->getNext()->getPri()) {
+        while (current->getNext() && priority >= current->getNext()->getPri()) {
             current = current->getNext();
         }
         newNode->setNext( current->getNext());
