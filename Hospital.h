@@ -28,7 +28,7 @@ public:
     Patient* remove_request(string patient_type); // should use dequeue method
     Car* remove_available_car(char car_type); // should return nullptr if empty
 
-    void set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC);
+    void set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC, int owning_hospital);
     ~Hospital(); //should delete the dynamically allocated members of the queues
 };
 
@@ -37,7 +37,7 @@ Hospital::Hospital()
     ER = priQueue<Patient*>();
 }
 
-void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC){
+void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC, int owning_hospital){
     for (int i = 0; i < numOfSC; i++)
     {
         Car* new_car= new Car('s', special_car_speed);
