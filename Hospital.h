@@ -28,10 +28,23 @@ public:
     Patient* remove_request(char patient_type[2]); // should use dequeue method
     Car* remove_available_car(char car_type);
 
-
+    void set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC);
 };
 
 Hospital::Hospital()
 {
     ER = priQueue<Patient*>();
+}
+
+void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC){
+    for (int i = 0; i < numOfSC; i++)
+    {
+        Car new_car('s', special_car_speed);
+        add_free_car(&new_car, 's');
+    }
+    for (int i = 0; i < numOfNC; i++)
+    {
+        Car new_car('n', normal_car_speed);
+        add_free_car(&new_car, 'n');
+    }
 }
