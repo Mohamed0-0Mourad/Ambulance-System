@@ -26,7 +26,7 @@ public:
     Car* peek_available_car(char car_type)const;
     
     Patient* remove_request(string patient_type); // should use dequeue method
-    Car* remove_available_car(char car_type);
+    Car* remove_available_car(char car_type); // should return nullptr if empty
 
     void set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC);
     ~Hospital(); //should delete the dynamically allocated members of the queues
