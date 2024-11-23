@@ -22,7 +22,8 @@ public:
     void request(int time);
     void set_distance(int distance);
     void set_ID();
-    void request_hospital(int hospital_ID); //should set the request time
+    void request_hospital(int hospital_ID); 
+    void set_case_severity(int severity);
 
 
     /*******************New needed functions**********************/
