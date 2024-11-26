@@ -115,6 +115,8 @@ public:
 		    advance= advance->getNext();
 	    } cout << endl;
     }
+
+    int get_entries()const {return entries;}
 };
 
 template<typename T>

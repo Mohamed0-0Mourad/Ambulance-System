@@ -122,6 +122,7 @@ public :
 	void set_backptr(Node<T>* node) {backPtr = node;}
 	void print();
 	void decrement_entries() {entries--;}
+	int get_entries() const {return entries;}
 	~LinkedQueue();
 
 	//copy constructor
