@@ -12,7 +12,7 @@ class Organiser
 private:
     int numOf_hospitals;
     Hospital* hospitals;
-    Der_priQueue<Car*> out_cars;
+    Min_priQueue<Car*> out_cars;
     priQueue<Car*> back_cars;
     LinkedQueue<Patient*> finished_requests;
 public:
@@ -27,7 +27,7 @@ public:
 
 Organiser::Organiser(){
     hospitals = nullptr;
-    out_cars = Der_priQueue<Car*>();
+    out_cars = Min_priQueue<Car*>();
     back_cars = priQueue<Car*>();
     finished_requests=LinkedQueue<Patient*>();
 }
@@ -88,7 +88,7 @@ bool Organiser::backTo_hospital(){
 
 Organiser::~Organiser(){
     delete[] hospitals;
-    out_cars.~Der_priQueue();
+    out_cars.~Min_priQueue();
     back_cars.~priQueue();
     finished_requests.~LinkedQueue();
 }
