@@ -30,6 +30,9 @@ public:
     Patient* remove_request(string patient_type); // should use dequeue method
     Car* remove_available_car(char car_type); // should return nullptr if empty
 
+    void get_car_lists(LinkedQueue<Car*> *&n, LinkedQueue<Car*> *&s) {n=&Ncars;s=&Scars;}
+    void get_patient_lists(priQueue<Patient*> *&e,LinkedQueue<Patient*> *&s,CancelQueue<Patient*> *&n)
+    {e = & ER; s=&SR; n=& NR;}
     void set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC, int owning_hospital);
     ~Hospital(); //should delete the dynamically allocated members of the queues: delete <array name>
 };
