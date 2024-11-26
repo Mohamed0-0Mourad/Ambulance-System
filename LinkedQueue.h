@@ -117,6 +117,8 @@ public :
 	bool enqueue(const T& newEntry);
 	bool dequeue(T& frntEntry);  
 	bool peek(T& frntEntry)  const;	
+	Node<T> *get_backPtr()const {return backPtr;}
+	Node<T> *get_frontPtr()const {return frontPtr;}
 	~LinkedQueue();
 
 	//copy constructor
@@ -264,6 +266,35 @@ LinkedQueue<T>::LinkedQueue(const LinkedQueue<T> & LQ)
 #endif
 
 template < typename T>
-class CancelQueue :public LinkedQueue<T>{
-	
+class CancelQueue :public LinkedQueue<T>
+{
+public:
+	bool cancel_request(const int patientID, T& request);
 };
+
+template<typename T>
+bool CancelQueue<T>::cancel_request(const int patientID, T& request){
+	Node<T>* nodeToDeletePtr=nullptr, advance = get_frontPtr();
+	if(isEmpty()){return false;}
+	else if(advance->getItem()->get_patientID()==patientID){
+		dequeue(request);
+		return true;		
+	}
+
+	while(advance){
+		nodeToDeletePtr = advance->getNext();
+		if(nodeToDeletePtr->getItem()->get_patientID()==patientID){
+			advance->setNext(nodeToDeletePtr->getNext());
+			request=nodeToDeletePtr->getItem();
+			break;
+		}
+		else if(nodeToDeletePtr->getItem()->get_patientID()>patientID){return false;}
+		advance = advance->getNext();
+	}
+
+	if (nodeToDeletePtr == get_backPtr())
+		backPtr = nullptr ;	
+		
+	delete nodeToDeletePtr;
+	return true;
+}
