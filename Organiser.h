@@ -5,6 +5,7 @@
 #include "LinkedQueue.h"
 #include "priQueue.h"
 #include <fstream>
+#include "UI.h"
 using namespace std;
 
 class Organiser
@@ -17,11 +18,13 @@ private:
     LinkedQueue<Patient*> finished_requests;
 public:
     Organiser();
-    void load_file(string file_name, int& hopitals_num, int& requests_num);
+    void load_file(string file_name, int& hopitals_num, int& requests_num, Hospital*& hospital_list);
     bool move_to_finish(int hospitalID, string request_type, int& finished_num);
     bool assign_car(int hospitalID, char car_type, int current_time);
     bool carry_back(int current_time);
     bool backTo_hospital();
+    LinkedQueue<Patient*>* get_finished_list(){return &finished_requests;}
+    void get_cars_list(Min_priQueue<Car*> *&out, Min_priQueue<Car*> *&back){out=&out_cars;back=&back_cars;}
     ~Organiser();
 };
 
@@ -32,7 +35,7 @@ Organiser::Organiser(){
     finished_requests=LinkedQueue<Patient*>();
 }
 
-void Organiser::load_file(string file_name, int& hopitals_num, int& requests_num){
+void Organiser::load_file(string file_name, int& hopitals_num, int& requests_num, Hospital*& hospital_list){
     int normal_speed, special_speed;
     ifstream test(file_name);
     test >> numOf_hospitals >> special_speed >> normal_speed;
@@ -53,6 +56,7 @@ void Organiser::load_file(string file_name, int& hopitals_num, int& requests_num
     test.close();
     hopitals_num = numOf_hospitals ;
     requests_num = numOf_requests;
+    hospital_list=hospitals;
 }
 
 bool Organiser::move_to_finish(int hospitalID, string request_type, int& finished_num){
