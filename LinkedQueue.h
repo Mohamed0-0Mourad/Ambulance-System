@@ -107,7 +107,7 @@ template <typename T>
 class LinkedQueue
 {
 private :
-	
+	int entries;
 	Node<T>* backPtr;
 	Node<T>* frontPtr;
 public :
@@ -120,6 +120,7 @@ public :
 	Node<T> *get_backPtr()const {return backPtr;}
 	Node<T> *get_frontPtr()const {return frontPtr;}
 	void set_backptr(Node<T>* node) {backPtr = node;}
+	void print();
 	~LinkedQueue();
 
 	//copy constructor
@@ -138,7 +139,7 @@ LinkedQueue<T>::LinkedQueue()
 {
 	backPtr=nullptr;
 	frontPtr=nullptr;
-
+	entries = 0;
 }
 template <typename T>
 LinkedQueue<T>::LinkedQueue(int size, T default_value){
@@ -179,6 +180,7 @@ bool LinkedQueue<T>::enqueue( const T& newEntry)
 		backPtr->setNext(newNodePtr); // The queue was not empty
 
 	backPtr = newNodePtr; // New node is the last node now
+	entries++;
 	return true ;
 } // end enqueue
 
@@ -208,7 +210,7 @@ bool LinkedQueue<T>:: dequeue(T& frntEntry)
 		
 	// Free memory reserved for the dequeued node
 	delete nodeToDeletePtr;
-
+	entries--;
 	return true;
 
 }
@@ -263,7 +265,14 @@ LinkedQueue<T>::LinkedQueue(const LinkedQueue<T> & LQ)
 		NodePtr = NodePtr->getNext();
 	}	
 }
-
+template <typename T>
+void LinkedQueue<T>::print(){
+	Node<T>* advance = frontPtr;
+	while (advance){
+		cout << advance->getItem()->get_patientID() << ' ';
+		advance= advance->getNext();
+	} cout << endl;
+}
 #endif
 
 template < typename T>
