@@ -20,8 +20,8 @@ public:
     // constructor should create an empty queue for each of the data members
     // ex: ER = PriQueue<Patient*>();
     void add_request(Patient* const patient_ptr, string patient_type);//should use the Enqueue method of crosponding patient type list
-    // should check if it's emergency patient enqueue with severity as priority (get_case_severity()) 
-    void add_free_car(Car* const car_ptr, char car_type);//should use the Enqueue method of crossponding car type list
+    // should check if it's emergency patient enqueue with severity as priority (get_case_severity()) EP, SP, NP
+    void add_free_car(Car* const car_ptr, char car_type);//should use the Enqueue method of crossponding car type list n, s
     
     /* Return nullptr if empty */
     Patient* peek_request(string patient_type)const;   // should use peek method
