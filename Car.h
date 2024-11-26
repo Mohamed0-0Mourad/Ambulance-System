@@ -21,12 +21,12 @@ public:
     void pick_patient(Patient* patient); 
     void set_owning_hospital(int hospitalID); 
 
-    Patient* drop_patient();
-    char get_type();
-    int get_speed();
-    char get_status();
-    int get_owning_hospital();
-    
+    Patient* drop_patient(); // should set status free and set carried patient nullptr
+    char get_type()const;
+    int get_speed()const;
+    char get_status()const;
+    int get_owning_hospital()const;
+    Patient* get_carried_patient()const {return carried_patient;}
     
 
 };
