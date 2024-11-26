@@ -119,6 +119,7 @@ public :
 	bool peek(T& frntEntry)  const;	
 	Node<T> *get_backPtr()const {return backPtr;}
 	Node<T> *get_frontPtr()const {return frontPtr;}
+	void set_backptr(Node<T>* node) {backPtr = node;}
 	~LinkedQueue();
 
 	//copy constructor
@@ -293,7 +294,7 @@ bool CancelQueue<T>::cancel_request(const int patientID, T& request){
 	}
 
 	if (nodeToDeletePtr == get_backPtr())
-		backPtr = nullptr ;	
+		set_backPtr(nullptr);	
 		
 	delete nodeToDeletePtr;
 	return true;

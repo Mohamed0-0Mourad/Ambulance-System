@@ -51,7 +51,7 @@ public:
     }
 
     //insert the new node in its correct position according to its priority
-    void enqueue(const T& data, int priority) {
+    virtual void enqueue(const T& data, int priority) {
         priNode<T>* newNode = new priNode<T>(data, priority);
 
         if (head == nullptr || priority > head->getPri()) {
@@ -62,7 +62,7 @@ public:
         }
        
         priNode<T>* current = head;        
-        while (current->getNext() && priority >= current->getNext()->getPri()) {
+        while (current->getNext() && priority <= current->getNext()->getPri()) {
             current = current->getNext();
         }
         newNode->setNext( current->getNext());
@@ -92,10 +92,56 @@ public:
     bool isEmpty() const {
         return head == nullptr;
     }
+
+    priNode<T> *get_head(){return head;}
 };
 
 template<typename T>
-class Der_priQueue : public priQueue<T>
+class Min_priQueue : public priQueue<T>
 {
-
+public:
+    void enqueue(const T& data, int priority);
+    bool get_car_back(int patientID, T& car);
 };
+
+template <typename T>
+void Min_priQueue<T>::enqueue(const T& data, int priority){
+    priNode<T>* newNode = new priNode<T>(data, priority);
+    priNode<T>* head = get_head();
+    if (head == nullptr || priority > head->getPri()) {
+        
+        newNode->setNext(head);
+        head = newNode;
+        return;
+    }
+   
+    priNode<T>* current = head;        
+    while (current->getNext() && priority >= current->getNext()->getPri()) {
+        current = current->getNext();
+    }
+    newNode->setNext( current->getNext());
+    current->setNext( newNode);        
+}
+
+template <typename T>
+bool Min_priQueue<T>::get_car_back(int patientID, T& car){
+    Node<T>* nodeToDeletePtr=nullptr, advance = get_head();
+	int pri;
+    if(isEmpty()){return false;}
+	else if(advance->getItem()->get_patientID()==patientID){
+		return dequeue(car, pri);
+	}
+
+	while(advance){
+		nodeToDeletePtr = advance->getNext();
+		if(nodeToDeletePtr->getItem()->get_carried_patient()->get_patientID()==patientID){
+			advance->setNext(nodeToDeletePtr->getNext());
+			car=nodeToDeletePtr->getItem();
+			break;
+		}
+		advance = advance->getNext();
+	}
+
+	delete nodeToDeletePtr;
+	return true;
+}
