@@ -41,8 +41,9 @@ template <typename T>
 class priQueue
 {
     priNode<T>* head;
+    int entries;
 public:
-    priQueue() : head(nullptr) {}
+    priQueue() : head(nullptr), entries(0) {}
 
     ~priQueue() {
         T tmp;
@@ -66,7 +67,8 @@ public:
             current = current->getNext();
         }
         newNode->setNext( current->getNext());
-        current->setNext( newNode);        
+        current->setNext( newNode);  
+        entries++;      
     }
 
     bool dequeue(T& topEntry, int& pri) {
@@ -77,6 +79,7 @@ public:
         priNode<T>* temp = head;
         head = head->getNext();
         delete temp;
+        entries--;
         return true;
     }
 
@@ -94,6 +97,24 @@ public:
     }
 
     priNode<T> *get_head(){return head;}
+    void increment_entries() {entries++;}
+    void decrement_entries(){entries--;}
+    void print_patients(){
+	    Node<T>* advance = frontPtr;
+	    while (advance){
+	    	cout << advance->getItem()->get_patientID() << ", ";
+	    	advance= advance->getNext();
+	    } cout << endl;
+    }
+
+    void print_cars(){
+        Node<T>* advance = frontPtr;
+	    while (advance){
+            T car = advance->getItem();
+		    cout << 'H' << car->get_owning_hospital()<<"_P"<<car->get_carried_patient() << ", ";
+		    advance= advance->getNext();
+	    } cout << endl;
+    }
 };
 
 template<typename T>
@@ -101,7 +122,7 @@ class Min_priQueue : public priQueue<T>
 {
 public:
     void enqueue(const T& data, int priority);
-    bool get_car_back(int patientID, T& car);
+    bool cancel_car(int patientID, T& car);
 };
 
 template <typename T>
@@ -120,11 +141,12 @@ void Min_priQueue<T>::enqueue(const T& data, int priority){
         current = current->getNext();
     }
     newNode->setNext( current->getNext());
-    current->setNext( newNode);        
+    current->setNext( newNode); 
+    increment_entries();       
 }
 
 template <typename T>
-bool Min_priQueue<T>::get_car_back(int patientID, T& car){
+bool Min_priQueue<T>::cancel_car(int patientID, T& car){
     Node<T>* nodeToDeletePtr=nullptr, advance = get_head();
 	int pri;
     if(isEmpty()){return false;}
@@ -143,5 +165,6 @@ bool Min_priQueue<T>::get_car_back(int patientID, T& car){
 	}
 
 	delete nodeToDeletePtr;
+    decrement_entries();
 	return true;
 }

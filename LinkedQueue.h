@@ -121,6 +121,7 @@ public :
 	Node<T> *get_frontPtr()const {return frontPtr;}
 	void set_backptr(Node<T>* node) {backPtr = node;}
 	void print();
+	void decrement_entries() {entries--;}
 	~LinkedQueue();
 
 	//copy constructor
@@ -287,8 +288,7 @@ bool CancelQueue<T>::cancel_request(const int patientID, T& request){
 	Node<T>* nodeToDeletePtr=nullptr, advance = get_frontPtr();
 	if(isEmpty()){return false;}
 	else if(advance->getItem()->get_patientID()==patientID){
-		dequeue(request);
-		return true;		
+		return dequeue(request);
 	}
 
 	while(advance){
@@ -306,5 +306,6 @@ bool CancelQueue<T>::cancel_request(const int patientID, T& request){
 		set_backPtr(nullptr);	
 		
 	delete nodeToDeletePtr;
+	decrement_entries();
 	return true;
 }
