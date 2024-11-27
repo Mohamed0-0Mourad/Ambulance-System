@@ -12,21 +12,67 @@ private:
     Patient* carried_patient;
     int owning_hospitalID;
 public:
-    Car();      
+    Car();  
+    Car (char CT, int CS, char S, Patient* CP) : type(CT), speed(CS), status(S), carried_patient(CP) {}    
     Car(char car_type, int car_speed) : type(car_type), speed(car_speed){};
     
-    void set_type(char car_type);
-    void set_speed(int car_speed);
-    void set_status(char car_status);//has only three possiple values {r, a, l} crossponding to (Ready, Assigned, Loaded)
-    void pick_patient(Patient* patient); 
-    void set_owning_hospital(int hospitalID); 
+    void set_type(char ct)
+    {
+        type = ct;
+    }
 
-    Patient* drop_patient(); // should set status free and set carried patient nullptr
-    char get_type()const;
-    int get_speed()const;
-    char get_status()const;
-    int get_owning_hospital()const;
-    Patient* get_carried_patient()const {return carried_patient;}
+    void set_speed(int cs)
+    {
+        speed = cs;
+    }
+
+    void set_status(char s)
+    {
+        status = s;
+    }
+
+    void pick_patient(Patient* cp)
+    {
+        set_status('l');
+        carried_patient = cp;
+    }
+
+    void set_owning_hospital(int hospitalID)
+    {
+        owning_hospitalID = hospitalID;
+    }
+
+    Patient* drop_patient() // should set status free and set carried patient nullptr
+    {
+        set_status('r');
+        Patient* cp = carried_patient;
+        carried_patient = nullptr;
+        return cp;
+    }
+
+    char get_type()
+    {
+        return type;
+    }
+
+    int get_speed()
+    {
+        return speed;
+    }
+
+    char get_status()
+    {
+        return status;
+    }
+
+    int get_owning_hospital()
+    {
+        return owning_hospitalID;
+    }
     
-
+    Patient* get_carried_patient() 
+    {
+        return carried_patient;
+    }
+    
 };
