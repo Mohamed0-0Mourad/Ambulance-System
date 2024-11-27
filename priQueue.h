@@ -83,7 +83,7 @@ public:
         return true;
     }
 
-    bool peek(T& topEntry, int& pri) {
+    bool peek(T& topEntry, int& pri) const{
         if (isEmpty())
             return false;
 
