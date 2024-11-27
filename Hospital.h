@@ -40,8 +40,27 @@ public:
 Hospital::Hospital()
 {
     ER = priQueue<Patient*>();
+    SR = LinkedQueue<Patient*>();
+    NR = CancelQueue<Patient*>();
 }
 
+void Hospital::add_request(Patient* const patient_ptr, string patient_type) {
+    if (patient_type == "EP") {
+        ER.enqueue(patient_ptr, patient_ptr->get_case_severity());
+    } else if (patient_type == "SP") {
+        SR.enqueue(patient_ptr);
+    } else if (patient_type == "NP") {
+        NR.enqueue(patient_ptr);
+    }
+}
+
+void Hospital::add_free_car(Car* const car_ptr, char car_type) {
+    if (car_type == 's') {
+        Scars.enqueue(car_ptr);
+    } else if (car_type == 'n') {
+        Ncars.enqueue(car_ptr);
+    }
+}
 
 Patient* Hospital::peek_request(string patient_type) const {
     Patient* patient = nullptr;
@@ -62,6 +81,52 @@ Patient* Hospital::peek_request(string patient_type) const {
     return nullptr;
 }
 
+Car* Hospital::peek_available_car(char car_type) const {
+    Car* car = nullptr;
+    if (car_type == 's') {
+        if (Scars.peek(car)) {
+            return car;
+        }
+    } else if (car_type == 'n') {
+        if (Ncars.peek(car)) {
+            return car;
+        }
+    }
+    return nullptr;
+}
+
+Patient* Hospital::remove_request(string patient_type) {
+    Patient* patient = nullptr;
+    if (patient_type == "EP") {
+        int severity;
+        if (ER.dequeue(patient, severity)) {
+            return patient;
+        }
+    } else if (patient_type == "SP") {
+        if (SR.dequeue(patient)) {
+            return patient;
+        }
+    } else if (patient_type == "NP") {
+        if (NR.dequeue(patient)) {
+            return patient;
+        }
+    }
+    return nullptr;
+}
+
+Car* Hospital::remove_available_car(char car_type) {
+    Car* car = nullptr;
+    if (car_type == 's') {
+        if (Scars.dequeue(car)) {
+            return car;
+        }
+    } else if (car_type == 'n') {
+        if (Ncars.dequeue(car)) {
+            return car;
+        }
+    }
+    return nullptr;
+}
 
 void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC, int owning_hospital){
     for (int i = 0; i < numOfSC; i++)
