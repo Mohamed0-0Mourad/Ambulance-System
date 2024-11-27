@@ -42,6 +42,27 @@ Hospital::Hospital()
     ER = priQueue<Patient*>();
 }
 
+
+Patient* Hospital::peek_request(string patient_type) const {
+    Patient* patient = nullptr;
+    if (patient_type == "EP") {
+        int severity;
+        if (ER.peek(patient, severity)) {
+            return patient;
+        }
+    } else if (patient_type == "SP") {
+        if (SR.peek(patient)) {
+            return patient;
+        }
+    } else if (patient_type == "NP") {
+        if (NR.peek(patient)) {
+            return patient;
+        }
+    }
+    return nullptr;
+}
+
+
 void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC, int owning_hospital){
     for (int i = 0; i < numOfSC; i++)
     {
