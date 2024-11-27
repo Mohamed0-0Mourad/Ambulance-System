@@ -140,3 +140,11 @@ void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC
         add_free_car(new_car, 'n');
     }
 }
+
+Hospital::~Hospital(){
+    ER.~priQueue();
+    SR.~LinkedQueue();
+    NR.~CancelQueue();
+    Scars.~LinkedQueue();
+    Ncars.~LinkedQueue();
+}

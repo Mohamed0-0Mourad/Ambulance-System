@@ -286,8 +286,8 @@ public:
 
 template<typename T>
 bool CancelQueue<T>::cancel_request(const int patientID, T& request){
-	Node<T>* nodeToDeletePtr=nullptr, advance = get_frontPtr();
-	if(isEmpty()){return false;}
+	Node<T>* nodeToDeletePtr=nullptr, advance = this->get_frontPtr();
+	if(this->isEmpty()){return false;}
 	else if(advance->getItem()->get_patientID()==patientID){
 		return dequeue(request);
 	}
@@ -303,10 +303,10 @@ bool CancelQueue<T>::cancel_request(const int patientID, T& request){
 		advance = advance->getNext();
 	}
 
-	if (nodeToDeletePtr == get_backPtr())
-		set_backPtr(nullptr);	
+	if (nodeToDeletePtr == this->get_backPtr())
+		this->set_backPtr(nullptr);	
 		
 	delete nodeToDeletePtr;
-	decrement_entries();
+	this->decrement_entries();
 	return true;
 }

@@ -8,7 +8,7 @@ using namespace std;
 int main()
 {
     Organiser o;
-    int random, next, step{1}, hospitals_num, requests_num, finished_till_now{0};Hospital* hospitals;
+    int random, step{1}, hospitals_num, requests_num, finished_till_now{0};Hospital* hospitals;
     o.load_file("test.txt", hospitals_num, requests_num, hospitals);
     UI interface;
     while(true)
@@ -44,11 +44,12 @@ int main()
             else if (random>=91 && random <95){
                 if(o.backTo_hospital()){continue;}
             }
-            cout << "Current Timestep: " << step;
-            for(int i{0};i<10;i++){cout<<'=';} cout << "Hospital #"<< h << "Data";for(int i{0};i<10;i++){cout<<'=';} cout <<endl;
+            cout << "Current Timestep: " << step<<endl;
+            for(int i{0};i<10;i++){cout<<'=';} cout << "Hospital #"<< h+1 << "Data";for(int i{0};i<10;i++){cout<<'=';} cout <<endl;
             interface.print_hospital(hospitals+h);
-            for(int i{0};i<10;i++){cout<<'=';} cout << "Hospital #"<< h << "END";for(int i{0};i<10;i++){cout<<'=';} cout <<endl;
-            interface.print_cars_info(o);
+            for(int i{0};i<10;i++){cout<<'=';} cout << "Hospital #"<< h+1 << "END";for(int i{0};i<10;i++){cout<<'=';} cout <<endl;
+            interface.print_cars_info(&o);
+            bool next;
             cin>>next;
         }
         step++;

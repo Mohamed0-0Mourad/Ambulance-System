@@ -115,3 +115,7 @@ void Patient::request_hospital(int hospital_ID) {
         cout << "Invalid hospital ID.";
     }
 }
+
+void Patient::set_case_severity(int severity){
+    case_severity=severity;
+}

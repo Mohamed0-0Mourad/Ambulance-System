@@ -55,7 +55,7 @@ public:
     virtual void enqueue(const T& data, int priority) {
         priNode<T>* newNode = new priNode<T>(data, priority);
 
-        if (head == nullptr || priority > head->getPri()) {
+        if (head == nullptr || ((!head) &&priority > head->getPri())) {
             
             newNode->setNext(head);
             head = newNode;
@@ -63,7 +63,7 @@ public:
         }
        
         priNode<T>* current = head;        
-        while (current->getNext() && priority <= current->getNext()->getPri()) {
+        while (current && current->getNext() && priority <= current->getNext()->getPri()) {
             current = current->getNext();
         }
         newNode->setNext( current->getNext());
@@ -100,17 +100,19 @@ public:
     void increment_entries() {entries++;}
     void decrement_entries(){entries--;}
     void print_patients(){
-	    Node<T>* advance = frontPtr;
+	    priNode<T>* advance = head;
+        int pr;
 	    while (advance){
-	    	cout << advance->getItem()->get_patientID() << ", ";
+	    	cout << advance->getItem(pr)->get_patientID() << ", ";
 	    	advance= advance->getNext();
 	    } cout << endl;
     }
 
     void print_cars(){
-        Node<T>* advance = frontPtr;
+        priNode<T>* advance = head;
+        int pr;
 	    while (advance){
-            T car = advance->getItem();
+            T car = advance->getItem(pr);
 		    cout << 'H' << car->get_owning_hospital()<<"_P"<<car->get_carried_patient() << ", ";
 		    advance= advance->getNext();
 	    } cout << endl;
@@ -130,8 +132,8 @@ public:
 template <typename T>
 void Min_priQueue<T>::enqueue(const T& data, int priority){
     priNode<T>* newNode = new priNode<T>(data, priority);
-    priNode<T>* head = get_head();
-    if (head == nullptr || priority > head->getPri()) {
+    priNode<T>* head = this->get_head();
+    if (head == nullptr || ((!head)&&priority > head->getPri())) {
         
         newNode->setNext(head);
         head = newNode;
@@ -139,19 +141,19 @@ void Min_priQueue<T>::enqueue(const T& data, int priority){
     }
    
     priNode<T>* current = head;        
-    while (current->getNext() && priority >= current->getNext()->getPri()) {
+    while (current && current->getNext() && priority >= current->getNext()->getPri()) {
         current = current->getNext();
     }
     newNode->setNext( current->getNext());
     current->setNext( newNode); 
-    increment_entries();       
+    this->increment_entries();       
 }
 
 template <typename T>
 bool Min_priQueue<T>::cancel_car(int patientID, T& car){
-    Node<T>* nodeToDeletePtr=nullptr, advance = get_head();
+    priNode<T>* nodeToDeletePtr=nullptr, advance = this->get_head();
 	int pri;
-    if(isEmpty()){return false;}
+    if(this->isEmpty()){return false;}
 	else if(advance->getItem()->get_patientID()==patientID){
 		return dequeue(car, pri);
 	}
@@ -167,6 +169,6 @@ bool Min_priQueue<T>::cancel_car(int patientID, T& car){
 	}
 
 	delete nodeToDeletePtr;
-    decrement_entries();
+    this->decrement_entries();
 	return true;
 }

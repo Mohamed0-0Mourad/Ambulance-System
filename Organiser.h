@@ -5,7 +5,6 @@
 #include "LinkedQueue.h"
 #include "priQueue.h"
 #include <fstream>
-#include "UI.h"
 using namespace std;
 
 class Organiser
@@ -51,7 +50,7 @@ void Organiser::load_file(string file_name, int& hopitals_num, int& requests_num
         test >> patient_type>>request_time>>PID>>HID>>dist;
         Patient* new_request = new Patient(patient_type, request_time, PID, HID, dist);
         if(patient_type=="EP"){test>>severity; new_request->set_case_severity(severity);}
-        hospitals[HID].add_request(new_request, patient_type);
+        hospitals[HID-1].add_request(new_request, patient_type);
     }
     test.close();
     hopitals_num = numOf_hospitals ;
