@@ -50,6 +50,7 @@ int main()
             for(int i{0};i<10;i++){cout<<'=';} cout << "Hospital #"<< h+1 << "END";for(int i{0};i<10;i++){cout<<'=';} cout <<endl;
             interface.print_cars_info(&o);
             bool next;
+            if(finished_till_now == requests_num) {return 0;}
             cin>>next;
         }
         step++;
