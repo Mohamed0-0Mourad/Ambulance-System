@@ -17,8 +17,19 @@ private:
     LinkedQueue<Patient*> finished_requests;
 public:
     Organiser();
+    void main_simulation();
+    bool handle_missed_EP(Patient* patientPtr, int owning_hospitalID);
+    void cancel_request(Patient* patientPtr, int current_timestep);
+    void move_car_out(int hospitalID, char car_type);
+    // deque a car of type {car_type} out of a hospital specified ID and enque it in out_cars
+    void free_car(int current_time);
+    // peek the back cars, access the carried patient, and check his finish time == current or not
+    // if equal dequeue from out_car.
+    //     then get_owning_hospital() ID 
+    //     call move_to finish() and call drop_patient()
     void load_file(string file_name, int& hopitals_num, int& requests_num, Hospital*& hospital_list);
-    bool move_to_finish(int hospitalID, string request_type, int& finished_num);
+    // we should add canceld requests reading
+    bool move_to_finish(string request_type, Patient* patient);
     bool assign_car(int hospitalID, char car_type, int current_time);
     bool carry_back(int current_time);
     bool backTo_hospital();

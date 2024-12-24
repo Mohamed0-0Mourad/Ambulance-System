@@ -9,48 +9,49 @@ using namespace std;
 class Hospital
 {
 private:
-    priQueue<Patient*> ER;
-    LinkedQueue<Patient*> SR;
-    CancelQueue<Patient*> NR;
+    priQueue<Patient*> EP;
+    LinkedQueue<Patient*> SP;
+    CancelQueue<Patient*> NP;
     LinkedQueue<Car*> Scars;
     LinkedQueue<Car*> Ncars;
     
 public:
     Hospital();     
-    // constructor should create an empty queue for each of the data members
-    // ex: ER = PriQueue<Patient*>();
-    void add_request(Patient* const patient_ptr, string patient_type);//should use the Enqueue method of crosponding patient type list
-    // should check if it's emergency patient enqueue with severity as priority (get_case_severity()) EP, SP, NP
-    void add_free_car(Car* const car_ptr, char car_type);//should use the Enqueue method of crossponding car type list n, s
+    void add_request(Patient* const patient_ptr, string patient_type);
+    void add_free_car(Car* const car_ptr, char car_type);
     
-    /* Return nullptr if empty */
-    Patient* peek_request(string patient_type)const;   // should use peek method
+    Patient* peek_request(string patient_type)const;   
     Car* peek_available_car(char car_type)const;
     
-    Patient* remove_request(string patient_type); // should use dequeue method
-    Car* remove_available_car(char car_type); // should return nullptr if empty
+    Patient* remove_request(string patient_type);
+    Car* remove_available_car(char car_type);
 
     void get_car_lists(LinkedQueue<Car*> *&n, LinkedQueue<Car*> *&s) {n=&Ncars;s=&Scars;}
     void get_patient_lists(priQueue<Patient*> *&e,LinkedQueue<Patient*> *&s,CancelQueue<Patient*> *&n)
-    {e = & ER; s=&SR; n=& NR;}
+    {e = & EP; s=&SP; n=& NP;}
+
+    bool assign_EP(); 
+    bool assign_SP(int current_timestep); // set the crossponding car's carreid patient to this request
+    bool assign_NP(int current_timestep); // check if the peek reuest time equal the timestep
+
     void set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC, int owning_hospital);
-    ~Hospital(); //should delete the dynamically allocated members of the queues: delete <array name>
+    ~Hospital(); 
 };
 
 Hospital::Hospital()
 {
-    ER = priQueue<Patient*>();
-    SR = LinkedQueue<Patient*>();
-    NR = CancelQueue<Patient*>();
+    EP = priQueue<Patient*>();
+    SP = LinkedQueue<Patient*>();
+    NP = CancelQueue<Patient*>();
 }
 
 void Hospital::add_request(Patient* const patient_ptr, string patient_type) {
     if (patient_type == "EP") {
-        ER.enqueue(patient_ptr, patient_ptr->get_case_severity());
+        EP.enqueue(patient_ptr, patient_ptr->get_case_severity());
     } else if (patient_type == "SP") {
-        SR.enqueue(patient_ptr);
+        SP.enqueue(patient_ptr);
     } else if (patient_type == "NP") {
-        NR.enqueue(patient_ptr);
+        NP.enqueue(patient_ptr);
     }
 }
 
@@ -65,16 +66,16 @@ void Hospital::add_free_car(Car* const car_ptr, char car_type) {
 Patient* Hospital::peek_request(string patient_type) const {
     Patient* patient = nullptr;
     if (patient_type == "EP") {
-        int severity;
-        if (ER.peek(patient, severity)) {
+        int sevEPity;
+        if (EP.peek(patient, sevEPity)) {
             return patient;
         }
     } else if (patient_type == "SP") {
-        if (SR.peek(patient)) {
+        if (SP.peek(patient)) {
             return patient;
         }
     } else if (patient_type == "NP") {
-        if (NR.peek(patient)) {
+        if (NP.peek(patient)) {
             return patient;
         }
     }
@@ -98,16 +99,16 @@ Car* Hospital::peek_available_car(char car_type) const {
 Patient* Hospital::remove_request(string patient_type) {
     Patient* patient = nullptr;
     if (patient_type == "EP") {
-        int severity;
-        if (ER.dequeue(patient, severity)) {
+        int sevEPity;
+        if (EP.dequeue(patient, sevEPity)) {
             return patient;
         }
     } else if (patient_type == "SP") {
-        if (SR.dequeue(patient)) {
+        if (SP.dequeue(patient)) {
             return patient;
         }
     } else if (patient_type == "NP") {
-        if (NR.dequeue(patient)) {
+        if (NP.dequeue(patient)) {
             return patient;
         }
     }
@@ -142,9 +143,9 @@ void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC
 }
 
 Hospital::~Hospital(){
-    ER.~priQueue();
-    SR.~LinkedQueue();
-    NR.~CancelQueue();
+    EP.~priQueue();
+    SP.~LinkedQueue();
+    NP.~CancelQueue();
     Scars.~LinkedQueue();
     Ncars.~LinkedQueue();
 }
