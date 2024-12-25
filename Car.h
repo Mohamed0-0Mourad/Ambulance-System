@@ -31,11 +31,12 @@ public:
         status = s;
     }
 
-    void pick_patient(Patient* cp)
+    void pick_patient()
     {
         set_status('l');
-        carried_patient = cp;
     }
+
+    void set_carried_patient(Patient* patient) {carried_patient = patient;}
 
     void set_owning_hospital(int hospitalID)
     {

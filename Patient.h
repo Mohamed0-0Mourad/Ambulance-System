@@ -6,6 +6,7 @@ class Patient
 {
 private:
     int request_time, dist,
+        assign_time,
         pick_time,      // AT + dist/speed 
         wait_time,      // PT - QT
         finish_time,    // PT + dist/speed
@@ -27,8 +28,8 @@ public:
 
 
     /*******************New needed functions**********************/
-    void set_assign_time(int timestep, int car_speed); //should also calculate all other times
-    void set_request_time(int timestep); 
+    void set_assign_time(int AT, int car_speed);
+    void set_request_time(int timestep) {request_time = timestep;} 
     // Geters for each data member____________________________________________________
     int get_request_time() const { return request_time; }
 
@@ -62,6 +63,7 @@ Patient::Patient()
     cancel_time = -1;
     hospitalID = 0;
     patientID = 1;
+    assign_time = 0;
     patient_type = "";
 }
 
@@ -119,3 +121,10 @@ void Patient::request_hospital(int hospital_ID) {
 void Patient::set_case_severity(int severity){
     case_severity=severity;
 }
+
+void Patient::set_assign_time(int AT, int car_speed){
+        int rood = dist / car_speed;
+        pick_time = AT + rood;
+        wait_time = pick_time - request_time;
+        finish_time = pick_time + rood;
+    } //should also calculate all other times
