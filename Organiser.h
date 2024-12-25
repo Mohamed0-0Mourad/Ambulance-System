@@ -4,6 +4,7 @@
 #include "Patient.h"
 #include "LinkedQueue.h"
 #include "priQueue.h"
+#include "UI.h"
 #include <fstream>
 using namespace std;
 
@@ -19,7 +20,7 @@ private:
 public:
     Organiser();
     void main_simulation(bool silent);
-    bool handle_missed_EP(Patient* patientPtr, int owning_hospitalID);
+    void handle_EP(int owning_hospitalID);
     void cancel_request(Patient* patientPtr, int current_timestep);
     void move_car_out(int hospitalID, char car_type);
     // deque a car of type {car_type} out of a hospital specified ID and enque it in out_cars
@@ -37,7 +38,7 @@ public:
     bool back_to_free(int current_time);
     bool finished_patients(Patient* patient);
     bool free_to_out(int hospitalID, char car_type, int current_time);
-    bool out_to_back(Patient* patient, int current_time);
+    bool out_to_back(int current_time);
     LinkedQueue<Patient*>* get_finished_list(){return &finished_requests;}
     void get_cars_list(Min_priQueue<Car*> *&out, Min_priQueue<Car*> *&back){out=&out_cars;back=&back_cars;}
     ~Organiser();
@@ -74,19 +75,20 @@ void Organiser::load_file(string file_name){
 bool Organiser::free_to_out(int hospitalID, char car_type, int current_time)
 {
     Car* c = hospitals[hospitalID - 1].remove_available_car(car_type);
-    if (!c) { return false; };
+    if (!c || !c->get_carried_patient()) { return false; };
     out_cars.enqueue(c, c->get_carried_patient()->get_pick_time());
     return true;
 }
 
 
 
-bool Organiser::out_to_back(Patient* patient, int current_time)
+bool Organiser::out_to_back(int current_time)
 {
-    Car* c = nullptr;
+    Car* c = nullptr; Patient* patient{nullptr};
     int pickup_time = 0;
         if (out_cars.peek(c, pickup_time))
         {
+            patient = c->get_carried_patient();
             int pp = patient->get_pick_time();
             if (current_time == pp)
             {
@@ -161,9 +163,33 @@ Organiser::~Organiser(){
     finished_requests.~LinkedQueue();
 }
 
+void Organiser::handle_EP(int owning_hospitalID)
+{
+    Patient* ep =hospitals[owning_hospitalID-1].remove_request("EP");
+    int to_HID;
+    int numOf_trials{0};
+    while(true)
+    {
+        if(numOf_trials >= (numOf_hospitals *2)){return;}
+        srand(time(nullptr));
+        to_HID = rand() % numOf_hospitals;
+        if(to_HID != owning_hospitalID -1){
+            Car* c = hospitals[to_HID].peek_available_car('n');
+            if(c) {
+                c->set_carried_patient(ep);
+                c->set_status('a');
+                return ;
+            }
+        }
+        numOf_trials++;
+    }
+    
+}
+
 void Organiser::main_simulation(bool silent)
 {
     int step{1};
+    UI interface;
     while (true)
     {
         // check for cancelations
@@ -171,15 +197,36 @@ void Organiser::main_simulation(bool silent)
         {
             // Check for requests to handle
                 // check EP
-                    // handle EP
+                if(hospitals[i].peek_request("EP")->get_request_time()==step){
+                    if(hospitals[i].assign_EP(step)){
+                        if(!free_to_out(i+1, 'n', step)){
+                            free_to_out(i+1, 's', step);
+                        }
+                    }
+                        // handle EP
+                    else{
+                        handle_EP(i+1);
+                    }
+                }
                 // check SP
+                if(hospitals[i].assign_SP(step)){
+                    if(free_to_out(i+1, 's', step)){}
+                }
                 // check NP
+                if(hospitals[i].assign_NP(step)){
+                    if(free_to_out(i+1, 'n', step)){}
+                }
             // assign requests that should be handled
             //      check for free to out cars
             //      check for out to back
+            if(out_to_back(step)) {}
             //      check for back to free
-            //          finished patients
-            // UI functions if(!silent)
+            if(back_to_free(step)) {}
+            // UI functions 
+            if(!silent){
+                interface.print_hospital(&hospitals[i]);
+                interface.print_cars_info(this);
+            }
             bool next;
             if(finished_requests.get_entries() == numOf_requests) {
                 // generate output file    
