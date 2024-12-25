@@ -14,7 +14,7 @@ private:
     CancelQueue<Patient*> NP;
     LinkedQueue<Car*> Scars;
     LinkedQueue<Car*> Ncars;
-    
+
 public:
     Hospital();     
     void add_request(Patient* const patient_ptr, string patient_type);
@@ -30,7 +30,7 @@ public:
     void get_patient_lists(priQueue<Patient*> *&e,LinkedQueue<Patient*> *&s,CancelQueue<Patient*> *&n)
     {e = & EP; s=&SP; n=& NP;}
 
-    bool assign_EP(); 
+    bool assign_EP(int current_timestep); 
     bool assign_SP(int current_timestep); // set the crossponding car's carreid patient to this request
     bool assign_NP(int current_timestep); // check if the peek reuest time equal the timestep
 
@@ -140,6 +140,80 @@ void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC
         Car* new_car= new Car('n', normal_car_speed);
         add_free_car(new_car, 'n');
     }
+}
+
+bool Hospital::assign_EP(int current_timestep) {
+    int car_speed = 0;
+    Patient* ep;
+    int pri;
+    bool b = EP.dequeue(ep, pri);
+    if (b == false) {
+        return false;
+    }
+
+    Car* ec;
+    bool a = Ncars.dequeue(ec);
+    if (a == false) {
+        a = Scars.dequeue(ec);
+        if (a == false)
+            return false;
+    }
+    car_speed = ec->get_speed();
+    ec->set_carried_patient(ep);
+    ep->set_assign_time(current_timestep, car_speed);
+    ec->set_status('a');
+
+    return true;
+}
+
+
+
+bool Hospital::assign_NP(int current_timestep) {
+    
+    Patient* np;
+    bool b = NP.peek(np);
+    if (b == false) {
+        return false;
+    }
+    if (np->get_request_time() != current_timestep) {
+        return false;
+    }
+
+    Car* nc;
+    bool a = Ncars.dequeue(nc);
+    if (a == false) {
+        return false;
+    }
+
+    nc->set_carried_patient(np);
+    np->set_assign_time(current_timestep, nc->get_speed());
+    nc->set_status('a');
+
+    return true;
+}
+
+
+bool Hospital::assign_SP(int current_timestep) {
+    
+    Patient* sp;
+    bool b = SP.peek(sp);
+    if (b == false) {
+        return false;
+    }
+    if (sp->get_request_time() != current_timestep) {
+        return false;
+    }
+
+    Car* sc;
+    bool a = Scars.dequeue(sc);
+    if (a == false) {
+        return false;
+    }
+
+    sc->set_carried_patient(sp);
+    sc->set_status('a');
+
+    return true;
 }
 
 Hospital::~Hospital(){
