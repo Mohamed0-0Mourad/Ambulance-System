@@ -33,6 +33,10 @@ public:
     bool assign_car(int hospitalID, char car_type, int current_time);
     bool carry_back(int current_time);
     bool backTo_hospital();
+    bool back_to_free(int current_time);
+    bool finished_patients(int hospitalID, string patient_type, int current_time);
+    bool free_to_out(int hospitalID, char car_type, int current_time);
+    bool out_to_back(Patient* patient, int current_time);
     LinkedQueue<Patient*>* get_finished_list(){return &finished_requests;}
     void get_cars_list(Min_priQueue<Car*> *&out, Min_priQueue<Car*> *&back){out=&out_cars;back=&back_cars;}
     ~Organiser();
@@ -69,11 +73,79 @@ void Organiser::load_file(string file_name, int& hopitals_num, int& requests_num
     hospital_list=hospitals;
 }
 
-bool Organiser::move_to_finish(int hospitalID, string request_type, int& finished_num){
-    Patient* p = hospitals[hospitalID].remove_request(request_type);
-    if(!p){return false;}
-    if(finished_requests.enqueue(p)){finished_num ++;return true;}
+// bool Organiser::move_to_finish(int hospitalID, string request_type, int& finished_num){
+//     Patient* p = hospitals[hospitalID].remove_request(request_type);
+//     if(!p){return false;}
+//     if(finished_requests.enqueue(p)){finished_num ++;return true;}
+//     return false;
+// }
+
+bool Organiser::free_to_out(int hospitalID, char car_type, int current_time)
+{
+    Car* c = hospitals[hospitalID - 1].remove_available_car(car_type);
+    if (!c) { return false; };
+    out_cars.enqueue(c, c->get_carried_patient()->get_pick_time());
+    return true;
+}
+
+
+
+bool Organiser::out_to_back(Patient* patient, int current_time)
+{
+    Car* c = nullptr;
+    int pickup_time = 0;
+        if (out_cars.peek(c, pickup_time))
+        {
+            int pp = patient->get_pick_time();
+            if (current_time == pp)
+            {
+                out_cars.dequeue(c, pp);
+                c->pick_patient();
+                back_cars.enqueue(c, patient->get_finish_time());
+                return true;
+            }
+        }
     return false;
+}
+
+
+
+bool Organiser::back_to_free(int current_time)
+{
+    Car* c = nullptr;
+    int finish_time = 0;
+    if (back_cars.peek(c, finish_time))
+    {
+        Patient* patient = c->get_carried_patient();
+        if (!patient) { return false; }
+        int finish_time = patient->get_finish_time();
+        if (current_time == finish_time)
+        {
+            back_cars.dequeue(c, finish_time);
+            patient = c->drop_patient();
+            int hospitalID = c->get_owning_hospital();
+            hospitals[hospitalID - 1].add_free_car(c, c->get_type());
+            string pt = patient->get_patient_type();
+            finished_patients(hospitalID, pt, current_time);
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+bool Organiser::finished_patients(int hospitalID, string patient_type, int current_time)
+{
+    Patient* patient = hospitals[hospitalID - 1].remove_request(patient_type);
+    if (!patient) { return false; }
+    if (current_time = patient->get_finish_time())
+    {
+        if (finished_requests.enqueue(patient))
+        {
+            return true;
+        }
+    }
 }
 
 bool Organiser::assign_car(int hospitalID, char car_type, int current_time){
