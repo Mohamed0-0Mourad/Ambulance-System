@@ -11,13 +11,14 @@ class Organiser
 {
 private:
     int numOf_hospitals;
+    int numOf_requests;
     Hospital* hospitals;
     Min_priQueue<Car*> out_cars;
     Min_priQueue<Car*> back_cars;
     LinkedQueue<Patient*> finished_requests;
 public:
     Organiser();
-    void main_simulation();
+    void main_simulation(bool silent);
     bool handle_missed_EP(Patient* patientPtr, int owning_hospitalID);
     void cancel_request(Patient* patientPtr, int current_timestep);
     void move_car_out(int hospitalID, char car_type);
@@ -27,14 +28,14 @@ public:
     // if equal dequeue from out_car.
     //     then get_owning_hospital() ID 
     //     call move_to finish() and call drop_patient()
-    void load_file(string file_name, int& hopitals_num, int& requests_num, Hospital*& hospital_list);
+    void load_file(string file_name);
     // we should add canceld requests reading
     bool move_to_finish(string request_type, Patient* patient);
     bool assign_car(int hospitalID, char car_type, int current_time);
     bool carry_back(int current_time);
     bool backTo_hospital();
     bool back_to_free(int current_time);
-    bool finished_patients(int hospitalID, string patient_type, int current_time);
+    bool finished_patients(Patient* patient);
     bool free_to_out(int hospitalID, char car_type, int current_time);
     bool out_to_back(Patient* patient, int current_time);
     LinkedQueue<Patient*>* get_finished_list(){return &finished_requests;}
@@ -49,7 +50,7 @@ Organiser::Organiser(){
     finished_requests=LinkedQueue<Patient*>();
 }
 
-void Organiser::load_file(string file_name, int& hopitals_num, int& requests_num, Hospital*& hospital_list){
+void Organiser::load_file(string file_name){
     int normal_speed, special_speed;
     ifstream test(file_name);
     test >> numOf_hospitals >> special_speed >> normal_speed;
@@ -59,7 +60,7 @@ void Organiser::load_file(string file_name, int& hopitals_num, int& requests_num
         test>>special_cars>>normal_cars;
         hospitals[i].set_cars(normal_speed, special_speed, special_cars, normal_cars, i);
     }
-    int numOf_requests; test>>numOf_requests;
+    test>>numOf_requests;
     string patient_type; int request_time, PID, HID, dist, severity;
     while (numOf_requests--){
         test >> patient_type>>request_time>>PID>>HID>>dist;
@@ -68,17 +69,7 @@ void Organiser::load_file(string file_name, int& hopitals_num, int& requests_num
         hospitals[HID-1].add_request(new_request, patient_type);
     }
     test.close();
-    hopitals_num = numOf_hospitals ;
-    requests_num = numOf_requests;
-    hospital_list=hospitals;
 }
-
-// bool Organiser::move_to_finish(int hospitalID, string request_type, int& finished_num){
-//     Patient* p = hospitals[hospitalID].remove_request(request_type);
-//     if(!p){return false;}
-//     if(finished_requests.enqueue(p)){finished_num ++;return true;}
-//     return false;
-// }
 
 bool Organiser::free_to_out(int hospitalID, char car_type, int current_time)
 {
@@ -126,7 +117,7 @@ bool Organiser::back_to_free(int current_time)
             int hospitalID = c->get_owning_hospital();
             hospitals[hospitalID - 1].add_free_car(c, c->get_type());
             string pt = patient->get_patient_type();
-            finished_patients(hospitalID, pt, current_time);
+            finished_patients(patient);
             return true;
         }
     }
@@ -134,18 +125,9 @@ bool Organiser::back_to_free(int current_time)
 }
 
 
-
-bool Organiser::finished_patients(int hospitalID, string patient_type, int current_time)
+bool Organiser::finished_patients(Patient* patient)
 {
-    Patient* patient = hospitals[hospitalID - 1].remove_request(patient_type);
-    if (!patient) { return false; }
-    if (current_time = patient->get_finish_time())
-    {
-        if (finished_requests.enqueue(patient))
-        {
-            return true;
-        }
-    }
+    finished_requests.enqueue(patient);
 }
 
 bool Organiser::assign_car(int hospitalID, char car_type, int current_time){
@@ -177,4 +159,35 @@ Organiser::~Organiser(){
     out_cars.~Min_priQueue();
     back_cars.~Min_priQueue();
     finished_requests.~LinkedQueue();
+}
+
+void Organiser::main_simulation(bool silent)
+{
+    int step{1};
+    while (true)
+    {
+        // check for cancelations
+        for(int i{0}; i< numOf_hospitals; i++)
+        {
+            // Check for requests to handle
+                // check EP
+                    // handle EP
+                // check SP
+                // check NP
+            // assign requests that should be handled
+            //      check for free to out cars
+            //      check for out to back
+            //      check for back to free
+            //          finished patients
+            // UI functions if(!silent)
+            bool next;
+            if(finished_requests.get_entries() == numOf_requests) {
+                // generate output file    
+                return;
+            }
+            cin>>next;   
+        }
+        step++;
+    }
+    
 }
