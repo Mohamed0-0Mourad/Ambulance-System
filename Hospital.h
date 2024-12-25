@@ -144,13 +144,6 @@ void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC
 
 bool Hospital::assign_EP(int current_timestep) {
     int car_speed = 0;
-    Patient* ep;
-    int pri;
-    bool b = EP.dequeue(ep, pri);
-    if (b == false) {
-        return false;
-    }
-
     Car* ec;
     bool a = Ncars.dequeue(ec);
     if (a == false) {
@@ -158,6 +151,13 @@ bool Hospital::assign_EP(int current_timestep) {
         if (a == false)
             return false;
     }
+    Patient* ep;
+    int pri;
+    bool b = EP.dequeue(ep, pri);
+    if (b == false) {
+        return false;
+    }
+
     car_speed = ec->get_speed();
     ec->set_carried_patient(ep);
     ep->set_assign_time(current_timestep, car_speed);
@@ -169,6 +169,11 @@ bool Hospital::assign_EP(int current_timestep) {
 
 
 bool Hospital::assign_NP(int current_timestep) {
+    Car* nc;
+    bool a = Ncars.dequeue(nc);
+    if (a == false) {
+        return false;
+    }
     
     Patient* np;
     bool b = NP.peek(np);
@@ -176,12 +181,6 @@ bool Hospital::assign_NP(int current_timestep) {
         return false;
     }
     if (np->get_request_time() != current_timestep) {
-        return false;
-    }
-
-    Car* nc;
-    bool a = Ncars.dequeue(nc);
-    if (a == false) {
         return false;
     }
 
@@ -194,6 +193,11 @@ bool Hospital::assign_NP(int current_timestep) {
 
 
 bool Hospital::assign_SP(int current_timestep) {
+    Car* sc;
+    bool a = Scars.dequeue(sc);
+    if (a == false) {
+        return false;
+    }
     
     Patient* sp;
     bool b = SP.peek(sp);
@@ -201,12 +205,6 @@ bool Hospital::assign_SP(int current_timestep) {
         return false;
     }
     if (sp->get_request_time() != current_timestep) {
-        return false;
-    }
-
-    Car* sc;
-    bool a = Scars.dequeue(sc);
-    if (a == false) {
         return false;
     }
 
