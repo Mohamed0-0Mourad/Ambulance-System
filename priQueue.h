@@ -52,13 +52,52 @@ public:
     }
 
     //insert the new node in its correct position according to its priority
-    virtual void enqueue(const T& data, int priority) {
+    void min_enqueue(const T& data, int priority){
         priNode<T>* newNode = new priNode<T>(data, priority);
+        priNode<T>* head = this->get_head();
+        if(!head){
+            this->set_head(newNode);
+            this->increment_entries();
+            return;
+        }
+        if ((head)&&priority < head->getPri()) {
 
-        if (head == nullptr || ((!head) &&priority > head->getPri())) {
+            newNode->setNext(head);
+            this->set_head(newNode);
+            this->increment_entries();
+            return;
+        }
+        else {
+            head->setNext(newNode);
+            this->increment_entries();
+            this->set_head(newNode);
+            return;
+        }
+    
+        priNode<T>* current = head;        
+        while (current && current->getNext() && priority >= current->getNext()->getPri()) {
+            current = current->getNext();
+        }
+        newNode->setNext( current->getNext());
+        current->setNext( newNode); 
+        this->increment_entries();       
+        }
+
+    void enqueue(const T& data, int priority) {
+        priNode<T>* newNode = new priNode<T>(data, priority);
+        if(!head){
+            head = newNode;
+            entries++;return;
+        }
+        if ((head) &&priority > head->getPri()){
             
             newNode->setNext(head);
             head = newNode;
+            return;
+        }
+        else {
+            head->setNext(newNode);
+            entries++;
             return;
         }
        
@@ -70,7 +109,7 @@ public:
         current->setNext( newNode);  
         entries++;      
     }
-
+    void set_head(priNode<T> * h){head = h;}
     bool dequeue(T& topEntry, int& pri) {
         if (isEmpty())
             return false;
@@ -113,7 +152,7 @@ public:
         int pr;
 	    while (advance){
             T car = advance->getItem(pr);
-		    cout << 'H' << car->get_owning_hospital()<<"_P"<<car->get_carried_patient() << ", ";
+		    cout << 'H' << car->get_owning_hospital()<<"_P"<<car->get_carried_patient()->get_patientID() << ", ";
 		    advance= advance->getNext();
 	    } cout << endl;
     }
@@ -133,10 +172,22 @@ template <typename T>
 void Min_priQueue<T>::enqueue(const T& data, int priority){
     priNode<T>* newNode = new priNode<T>(data, priority);
     priNode<T>* head = this->get_head();
-    if (head == nullptr || ((!head)&&priority > head->getPri())) {
+    if(!head){
+        this->set_head(newNode);
+        this->increment_entries();
+        return;
+    }
+    if ((head)&&priority < head->getPri()) {
         
         newNode->setNext(head);
-        head = newNode;
+        this->set_head(newNode);
+        this->increment_entries();
+        return;
+    }
+    else {
+        head->setNext(newNode);
+        this->increment_entries();
+        this->set_head(newNode);
         return;
     }
    
@@ -151,18 +202,18 @@ void Min_priQueue<T>::enqueue(const T& data, int priority){
 
 template <typename T>
 bool Min_priQueue<T>::cancel_car(int patientID, T& car){
-    priNode<T>* nodeToDeletePtr=nullptr, advance = this->get_head();
+    priNode<T>* nodeToDeletePtr=nullptr; priNode<T>* advance = this->get_head();
 	int pri;
     if(this->isEmpty()){return false;}
-	else if(advance->getItem()->get_patientID()==patientID){
-		return dequeue(car, pri);
+	else if(advance->getItem(pri)->get_carried_patient()->get_patientID()==patientID){
+		return this->dequeue(car, pri);
 	}
 
 	while(advance){
 		nodeToDeletePtr = advance->getNext();
-		if(nodeToDeletePtr->getItem()->get_carried_patient()->get_patientID()==patientID){
+		if(nodeToDeletePtr->getItem(pri)->get_carried_patient()->get_patientID()==patientID){
 			advance->setNext(nodeToDeletePtr->getNext());
-			car=nodeToDeletePtr->getItem();
+			car=nodeToDeletePtr->getItem(pri);
 			break;
 		}
 		advance = advance->getNext();

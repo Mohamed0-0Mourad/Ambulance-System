@@ -36,6 +36,9 @@ public:
 
     void set_cars(int normal_car_speed, int special_car_speed, int numOfSC, int numOfNC, int owning_hospital);
     ~Hospital(); 
+    bool cancel_request(int patient_ID){
+        return NP.cancel_request(patient_ID);
+    }
 };
 
 Hospital::Hospital()
@@ -134,20 +137,22 @@ void Hospital::set_cars(int normal_car_speed, int special_car_speed, int numOfSC
     {
         Car* new_car= new Car('s', special_car_speed);
         add_free_car(new_car, 's');
+        new_car->set_owning_hospital(owning_hospital);
     }
     for (int i = 0; i < numOfNC; i++)
     {
         Car* new_car= new Car('n', normal_car_speed);
         add_free_car(new_car, 'n');
+        new_car->set_owning_hospital(owning_hospital);
     }
 }
 
 bool Hospital::assign_EP(int current_timestep) {
     int car_speed = 0;
     Car* ec;
-    bool a = Ncars.dequeue(ec);
+    bool a = Ncars.peek(ec);
     if (a == false) {
-        a = Scars.dequeue(ec);
+        a = Scars.peek(ec);
         if (a == false)
             return false;
     }
@@ -170,7 +175,7 @@ bool Hospital::assign_EP(int current_timestep) {
 
 bool Hospital::assign_NP(int current_timestep) {
     Car* nc;
-    bool a = Ncars.dequeue(nc);
+    bool a = Ncars.peek(nc);
     if (a == false) {
         return false;
     }
@@ -194,7 +199,7 @@ bool Hospital::assign_NP(int current_timestep) {
 
 bool Hospital::assign_SP(int current_timestep) {
     Car* sc;
-    bool a = Scars.dequeue(sc);
+    bool a = Scars.peek(sc);
     if (a == false) {
         return false;
     }
@@ -215,9 +220,9 @@ bool Hospital::assign_SP(int current_timestep) {
 }
 
 Hospital::~Hospital(){
-    EP.~priQueue();
-    SP.~LinkedQueue();
-    NP.~CancelQueue();
-    Scars.~LinkedQueue();
-    Ncars.~LinkedQueue();
+    // EP.~priQueue();
+    // SP.~LinkedQueue();
+    // NP.~CancelQueue();
+    // Scars.~LinkedQueue();
+    // Ncars.~LinkedQueue();
 }

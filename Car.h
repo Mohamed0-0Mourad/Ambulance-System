@@ -12,9 +12,15 @@ private:
     Patient* carried_patient;
     int owning_hospitalID;
 public:
-    Car();  
+    Car(){
+        type = char();
+        speed = int();
+        status = char();
+        carried_patient = nullptr;
+        owning_hospitalID = 0;
+    }
     Car (char CT, int CS, char S, Patient* CP) : type(CT), speed(CS), status(S), carried_patient(CP) {}    
-    Car(char car_type, int car_speed) : type(car_type), speed(car_speed){};
+    Car(char car_type, int car_speed) : type(car_type), speed(car_speed){Car();}
     
     void set_type(char ct)
     {

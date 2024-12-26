@@ -6,6 +6,7 @@
 #include "priQueue.h"
 #include "UI.h"
 #include <fstream>
+#include <vector>
 using namespace std;
 
 class Organiser
@@ -17,11 +18,14 @@ private:
     Min_priQueue<Car*> out_cars;
     Min_priQueue<Car*> back_cars;
     LinkedQueue<Patient*> finished_requests;
+    vector<int> canceled_IDs;
+    vector<int> canceled_H;
+    vector<int> canceled_T;
 public:
     Organiser();
     void main_simulation(bool silent);
     void handle_EP(int owning_hospitalID);
-    void cancel_request(Patient* patientPtr, int current_timestep);
+    void cancel_request(int current_time);
     void move_car_out(int hospitalID, char car_type);
     // deque a car of type {car_type} out of a hospital specified ID and enque it in out_cars
     void free_car(int current_time);
@@ -59,15 +63,29 @@ void Organiser::load_file(string file_name){
     for(int i{0}; i < numOf_hospitals; i++){
         int special_cars, normal_cars;
         test>>special_cars>>normal_cars;
-        hospitals[i].set_cars(normal_speed, special_speed, special_cars, normal_cars, i);
+        hospitals[i].set_cars(normal_speed, special_speed, special_cars, normal_cars, i+1);
     }
     test>>numOf_requests;
+    int count=numOf_requests;
     string patient_type; int request_time, PID, HID, dist, severity;
-    while (numOf_requests--){
+    while (count--){
         test >> patient_type>>request_time>>PID>>HID>>dist;
         Patient* new_request = new Patient(patient_type, request_time, PID, HID, dist);
         if(patient_type=="EP"){test>>severity; new_request->set_case_severity(severity);}
         hospitals[HID-1].add_request(new_request, patient_type);
+    }
+    int numOf_cancels;
+    test>>numOf_cancels;
+    count=numOf_cancels;
+    int cancel_time;
+    canceled_IDs= vector<int>(count);
+    canceled_H=vector<int>(count);
+    canceled_T = vector<int>(count);
+    for(int i=0; i<count; i++){
+        test >> PID>>HID>>cancel_time;
+        canceled_IDs[i] = PID;
+        canceled_H[i] = HID;
+        canceled_T[i] = cancel_time;
     }
     test.close();
 }
@@ -75,7 +93,8 @@ void Organiser::load_file(string file_name){
 bool Organiser::free_to_out(int hospitalID, char car_type, int current_time)
 {
     Car* c = hospitals[hospitalID - 1].remove_available_car(car_type);
-    if (!c || !c->get_carried_patient()) { return false; };
+    if (!c || !c->get_carried_patient()) { 
+        return false; }
     out_cars.enqueue(c, c->get_carried_patient()->get_pick_time());
     return true;
 }
@@ -130,10 +149,11 @@ bool Organiser::back_to_free(int current_time)
 bool Organiser::finished_patients(Patient* patient)
 {
     finished_requests.enqueue(patient);
+    return true;
 }
 
 bool Organiser::assign_car(int hospitalID, char car_type, int current_time){
-    Car* c = hospitals[hospitalID].remove_available_car(car_type);
+    Car* c = hospitals[hospitalID-1].remove_available_car(car_type);
     if(!c){return false;}
     out_cars.enqueue(c, current_time);
     return true;
@@ -150,7 +170,7 @@ bool Organiser::carry_back(int current_time){
 bool Organiser::backTo_hospital(){
     Car* c = nullptr;int p;
     if(back_cars.dequeue(c,p)){
-        hospitals[c->get_owning_hospital()].add_free_car(c, c->get_type());
+        hospitals[c->get_owning_hospital()-1].add_free_car(c, c->get_type());
         return true;
     }
     return false;
@@ -161,6 +181,22 @@ Organiser::~Organiser(){
     out_cars.~Min_priQueue();
     back_cars.~Min_priQueue();
     finished_requests.~LinkedQueue();
+}
+
+void Organiser::cancel_request(int current_time){
+    if(current_time == canceled_T.front()){
+        if(hospitals[canceled_H.front()-1].cancel_request(canceled_IDs.front())){
+            canceled_H.erase(canceled_H.begin());
+            canceled_IDs.erase(canceled_H.begin());
+            canceled_T.erase(canceled_H.begin());
+            return;}
+        Car* c= nullptr;
+        if(out_cars.cancel_car(canceled_IDs.front(), c)){}
+        hospitals[canceled_H.front()-1].add_free_car(c, c->get_type());
+        canceled_H.erase(canceled_H.begin());
+        canceled_IDs.erase(canceled_H.begin());
+        canceled_T.erase(canceled_H.begin());
+    }
 }
 
 void Organiser::handle_EP(int owning_hospitalID)
@@ -188,44 +224,37 @@ void Organiser::handle_EP(int owning_hospitalID)
 
 void Organiser::main_simulation(bool silent)
 {
-    int step{1};
+    int step{1}; Patient* ep;
     UI interface;
     while (true)
     {
-        // check for cancelations
+        cancel_request(step);
         for(int i{0}; i< numOf_hospitals; i++)
         {
-            // Check for requests to handle
-                // check EP
-                if(hospitals[i].peek_request("EP")->get_request_time()==step){
+                ep = hospitals[i].peek_request("EP");
+                if(ep && ep->get_request_time()==step){
                     if(hospitals[i].assign_EP(step)){
                         if(!free_to_out(i+1, 'n', step)){
                             free_to_out(i+1, 's', step);
                         }
                     }
-                        // handle EP
+
                     else{
                         handle_EP(i+1);
                     }
                 }
-                // check SP
                 if(hospitals[i].assign_SP(step)){
                     if(free_to_out(i+1, 's', step)){}
                 }
-                // check NP
                 if(hospitals[i].assign_NP(step)){
                     if(free_to_out(i+1, 'n', step)){}
                 }
-            // assign requests that should be handled
-            //      check for free to out cars
-            //      check for out to back
             if(out_to_back(step)) {}
-            //      check for back to free
             if(back_to_free(step)) {}
-            // UI functions 
             if(!silent){
-                interface.print_hospital(&hospitals[i]);
-                interface.print_cars_info(this);
+                cout << "Current Timestep: " << step<<endl;
+                interface.print_hospital(&hospitals[i], i+1);
+                interface.print_cars_info(&out_cars, &back_cars, &finished_requests);
             }
             bool next;
             if(finished_requests.get_entries() == numOf_requests) {

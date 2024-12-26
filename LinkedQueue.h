@@ -124,7 +124,7 @@ public :
 	void decrement_entries() {entries--;}
 	int get_entries() const {return entries;}
 	~LinkedQueue();
-
+	void set_backPtr(Node<T> *node){backPtr = node;}
 	//copy constructor
 	LinkedQueue(const LinkedQueue<T> & LQ);
 };
@@ -281,15 +281,16 @@ template < typename T>
 class CancelQueue :public LinkedQueue<T>
 {
 public:
-	bool cancel_request(const int patientID, T& request);
+	bool cancel_request(const int patientID);
 };
 
 template<typename T>
-bool CancelQueue<T>::cancel_request(const int patientID, T& request){
-	Node<T>* nodeToDeletePtr=nullptr, advance = this->get_frontPtr();
+bool CancelQueue<T>::cancel_request(const int patientID){
+	Node<T>* nodeToDeletePtr=nullptr;Node<T> *advance = this->get_frontPtr();
+	Patient* request;
 	if(this->isEmpty()){return false;}
 	else if(advance->getItem()->get_patientID()==patientID){
-		return dequeue(request);
+		return this->dequeue(request);
 	}
 
 	while(advance){
