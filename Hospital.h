@@ -174,6 +174,7 @@ bool Hospital::assign_EP(int current_timestep) {
 
 
 bool Hospital::assign_NP(int current_timestep) {
+    int car_speed= 0;
     Car* nc;
     bool a = Ncars.peek(nc);
     if (a == false) {
@@ -188,9 +189,9 @@ bool Hospital::assign_NP(int current_timestep) {
     if (np->get_request_time() != current_timestep) {
         return false;
     }
-
+    car_speed = nc->get_speed();
     nc->set_carried_patient(np);
-    np->set_assign_time(current_timestep, nc->get_speed());
+    np->set_assign_time(current_timestep,car_speed);
     nc->set_status('a');
 
     return true;
@@ -198,12 +199,12 @@ bool Hospital::assign_NP(int current_timestep) {
 
 
 bool Hospital::assign_SP(int current_timestep) {
+    int car_speed = 0;
     Car* sc;
     bool a = Scars.peek(sc);
     if (a == false) {
         return false;
     }
-    
     Patient* sp;
     bool b = SP.peek(sp);
     if (b == false) {
@@ -213,7 +214,9 @@ bool Hospital::assign_SP(int current_timestep) {
         return false;
     }
 
+    car_speed = sc->get_speed();
     sc->set_carried_patient(sp);
+    sp->set_assign_time(current_timestep, car_speed);
     sc->set_status('a');
 
     return true;

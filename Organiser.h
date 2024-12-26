@@ -222,7 +222,7 @@ void Organiser::generate_output_file(const string& output_file_name, int total_s
                    << "[NP: " << NP_Patients_Num << ", EP: " << EP_Patients_Num
                    << ", SP: " << SP_Patients_Num << "]" << endl;
 
-        outputFile << "Hospitals: " << AllPatients;
+        outputFile << "Hospitals: " << numOf_hospitals;
 
         for (int i = 0; i < numOf_hospitals; i++) {
             LinkedQueue<Car*> * NC; LinkedQueue<Car*> * SC;

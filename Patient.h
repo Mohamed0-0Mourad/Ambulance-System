@@ -48,7 +48,7 @@ public:
     int get_hospitalID() const { return hospitalID; }
 
     int get_patientID() const { return patientID; }
-
+    int get_assign_time() const {return assign_time;}
     string get_patient_type() const { return patient_type; }
 };
 
@@ -124,6 +124,7 @@ void Patient::set_case_severity(int severity){
 
 void Patient::set_assign_time(int AT, int car_speed){
         int rood = dist / car_speed;
+        assign_time= AT;
         pick_time = AT + rood;
         wait_time = pick_time - request_time;
         finish_time = pick_time + rood;
