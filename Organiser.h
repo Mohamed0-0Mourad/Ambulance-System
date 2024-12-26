@@ -218,18 +218,19 @@ void Organiser::generate_output_file(const string& output_file_name, int total_s
 
         
 
-        outputFile << "Pateins: " << AllPatients << "\t\t"
-                   << "[NP: " << NP_Patients_Num << ", EP: " << EP_Patients_Num
-                   << ", SP: " << SP_Patients_Num << "]" << endl;
-
-        outputFile << "Hospitals: " << numOf_hospitals;
-
         for (int i = 0; i < numOf_hospitals; i++) {
             LinkedQueue<Car*> * NC; LinkedQueue<Car*> * SC;
             hospitals[i].get_car_lists(NC, SC);
             NC_NUM += NC->get_entries(); 
             SC_NUM += SC->get_entries();
         }
+
+        outputFile << "Pateins: " << AllPatients << "\t\t"
+                   << "[NP: " << NP_Patients_Num << ", EP: " << EP_Patients_Num
+                   << ", SP: " << SP_Patients_Num << "]" << endl;
+
+        outputFile << "Hospitals: " << numOf_hospitals;
+
         TOTAL_CARS = NC_NUM + SC_NUM;
 
         outputFile << "Cars: " << TOTAL_CARS << "\t\t"
@@ -239,7 +240,6 @@ void Organiser::generate_output_file(const string& output_file_name, int total_s
         outputFile << "Avg Busy Time: " << busy_time_sum/numOf_requests << endl;
         outputFile << "Avg ulitization: " << busy_time_sum/total_simulation_time << endl;
     }
-
     outputFile.close();
 
     return;
