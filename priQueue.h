@@ -135,9 +135,10 @@ public:
         return head == nullptr;
     }
 
-    priNode<T> *get_head(){return head;}
+    priNode<T> *get_head()const{return head;}
     void increment_entries() {entries++;}
     void decrement_entries(){entries--;}
+    
     void print_patients(){
 	    priNode<T>* advance = head;
         int pr;
@@ -157,7 +158,7 @@ public:
 	    } cout << endl;
     }
 
-    int get_entries()const {return entries;}
+    int get_entries()const {return entries;}    
 };
 
 template<typename T>
@@ -222,4 +223,25 @@ bool Min_priQueue<T>::cancel_car(int patientID, T& car){
 	delete nodeToDeletePtr;
     this->decrement_entries();
 	return true;
+}
+template<typename T>
+std::ostream& operator<<(std::ostream& os, const priQueue<T>& patients) {
+    priNode<T>* advance = patients.get_head();
+    int pr;
+    while (advance){
+    	os<< advance->getItem(pr)->get_patientID() << ", ";
+    	advance= advance->getNext();
+    } os << endl;
+    return os;
+}
+template<class T> 
+std::ostream& operator<<(std::ostream& os, const Min_priQueue<T>& cars) {
+    priNode<T>* advance = cars.get_head();
+    int pr;
+    while (advance){
+        T car = advance->getItem(pr);
+	    os << 'H' << car->get_owning_hospital()<<"_P"<<car->get_carried_patient()->get_patientID() << ", ";
+	    advance= advance->getNext();
+    } os << endl;
+    return os;
 }

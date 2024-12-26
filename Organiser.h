@@ -27,18 +27,13 @@ public:
     void handle_EP(int owning_hospitalID);
     void cancel_request(int current_time);
     void move_car_out(int hospitalID, char car_type);
-    // deque a car of type {car_type} out of a hospital specified ID and enque it in out_cars
     void free_car(int current_time);
-    // peek the back cars, access the carried patient, and check his finish time == current or not
-    // if equal dequeue from out_car.
-    //     then get_owning_hospital() ID 
-    //     call move_to finish() and call drop_patient()
     void load_file(string file_name);
-    // we should add canceld requests reading
     bool move_to_finish(string request_type, Patient* patient);
     bool assign_car(int hospitalID, char car_type, int current_time);
     bool carry_back(int current_time);
     bool backTo_hospital();
+    void generate_output_file(const string& output_file_name, int total_simulation_time);
     bool back_to_free(int current_time);
     bool finished_patients(Patient* patient);
     bool free_to_out(int hospitalID, char car_type, int current_time);
@@ -181,6 +176,53 @@ Organiser::~Organiser(){
     out_cars.~Min_priQueue();
     back_cars.~Min_priQueue();
     finished_requests.~LinkedQueue();
+}
+
+
+void Organiser::generate_output_file(const string& output_file_name, int total_simulation_time) {
+    ofstream outfile(output_file_name);
+    if (!outfile.is_open()) {
+        cerr << "Error opening file: " << output_file_name << endl;
+        return;
+    }
+    Patient* p;
+    while(finished_requests.dequeue(p)) {
+        outfile << p->get_finish_time() << " " << p->get_pick_time() << " " << p->get_request_time() << " " << p->get_wait_time() << endl;
+    }
+
+    // Calculate statistics
+    // int total_patients = numOf_requests;
+    // int np_count = count_if(patient_data.begin(), patient_data.end(), [](const PatientData& data) { return data.QT == 1; });
+    // int sp_count = count_if(patient_data.begin(), patient_data.end(), [](const PatientData& data) { return data.QT == 2; });
+    // int ep_count = count_if(patient_data.begin(), patient_data.end(), [](const PatientData& data) { return data.QT == 3; });
+
+    // int total_hospitals = numOf_hospitals;
+    // int total_cars = out_cars.size() + back_cars.size();
+    // int scar_count = count_if(out_cars.begin(), out_cars.end(), [](Car* car) { return car->get_type() == 'S'; }) +
+    //                  count_if(back_cars.begin(), back_cars.end(), [](Car* car) { return car->get_type() == 'S'; });
+    // int ncar_count = total_cars - scar_count;
+
+    // double avg_wait_time = accumulate(patient_data.begin(), patient_data.end(), 0.0, [](double sum, const PatientData& data) {
+    //     return sum + data.WT;
+    // }) / total_patients;
+
+    // int unserved_ep_count = count_if(patient_data.begin(), patient_data.end(), [](const PatientData& data) {
+    //     return data.QT == 3 && data.WT > 0; // Assuming WT > 0 means not served by home hospital
+    // });
+    // double ep_unserved_percentage = (double)unserved_ep_count / ep_count * 100;
+
+    // double avg_busy_time = 0; // Assuming you have a way to calculate this
+    // double avg_utilization = avg_busy_time / total_simulation_time * 100;
+
+    // // Write statistics to file
+    // outfile << "patients: " << total_patients << " [NP: " << np_count << ", SP: " << sp_count << ", EP: " << ep_count << "]" << endl;
+    // outfile << "Hospitals = " << total_hospitals << endl;
+    // outfile << "cars: " << total_cars << " [SCar: " << scar_count << ", NCar: " << ncar_count << "]" << endl;
+    // outfile << "Avg wait time = " << fixed << setprecision(2) << avg_wait_time << endl;
+    // outfile << "Avg busy time = " << fixed << setprecision(2) << avg_busy_time << endl;
+    // outfile << "Avg utilization = " << fixed << setprecision(2) << avg_utilization << "%" << endl;
+
+    outfile.close();
 }
 
 void Organiser::cancel_request(int current_time){

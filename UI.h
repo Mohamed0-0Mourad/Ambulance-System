@@ -20,9 +20,9 @@ void UI::print_hospital(Hospital* H, int id){
     priQueue<Patient*> *emergency ;LinkedQueue<Patient*> *special;CancelQueue<Patient*> *normal;
     H->get_patient_lists(emergency, special, normal);
 
-    cout << emergency->get_entries() << " EP requests: "; emergency->print_patients();
-    cout << special->get_entries() << " SP requests: "; special->print();
-    cout << normal->get_entries() << " NP requests: "; normal->print();
+    cout << emergency->get_entries() << " EP requests: " << *emergency;
+    cout << special->get_entries() << " SP requests: "<< *special;
+    cout << normal->get_entries() << " NP requests: "<< *normal;
     
     LinkedQueue<Car*>* nc; LinkedQueue<Car*>* sc;
     H->get_car_lists(nc, sc);
@@ -32,10 +32,10 @@ void UI::print_hospital(Hospital* H, int id){
 
 void UI::print_cars_info(Min_priQueue<Car*>* out,Min_priQueue<Car*>* back, LinkedQueue<Patient*>* finished){
     for(int i{0}; i<20;i++){cout <<'-';} cout<<endl;
-    cout << out->get_entries() << " ==> Out Cars: "; out->print_cars();
-    cout << back->get_entries() << " <== Back Cars: "; back->print_cars();
+    cout << out->get_entries() << " ==> Out Cars: "<< *out;//->print_cars();
+    cout << back->get_entries() << " <== Back Cars: "<< *back;//->print_cars();
     for(int i{0}; i<20;i++){cout <<'-';} cout<<endl;
-    cout<<finished->get_entries() << " Finished Patients: "; finished->print();
+    cout<<finished->get_entries() << " Finished Patients: " << *finished;
 }
 
 UI::~UI() {}

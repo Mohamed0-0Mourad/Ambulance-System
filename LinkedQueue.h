@@ -268,12 +268,14 @@ LinkedQueue<T>::LinkedQueue(const LinkedQueue<T> & LQ)
 	}	
 }
 template <typename T>
-void LinkedQueue<T>::print(){
-	Node<T>* advance = frontPtr;
-	while (advance){
-		cout << advance->getItem()->get_patientID() << ' ';
-		advance= advance->getNext();
-	} cout << endl;
+std::ostream& operator<<(std::ostream& os, const LinkedQueue<T>& queue) {
+    Node<T>* advance = queue.get_frontPtr(); 
+    while (advance) {
+        os << advance->getItem()->get_patientID() << ", ";
+        advance = advance->getNext();
+    }
+    os << std::endl;
+    return os;
 }
 #endif
 
