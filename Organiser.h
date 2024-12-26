@@ -55,7 +55,7 @@ void Organiser::load_file(string file_name){
     ifstream test(file_name);
     test >> numOf_hospitals >> special_speed >> normal_speed;
     hospitals = new Hospital[numOf_hospitals];
-    for(int i{0}; i < numOf_hospitals; i++){
+    for(int i=0; i < numOf_hospitals; i++){
         int special_cars, normal_cars;
         test>>special_cars>>normal_cars;
         hospitals[i].set_cars(normal_speed, special_speed, special_cars, normal_cars, i+1);
@@ -98,7 +98,7 @@ bool Organiser::free_to_out(int hospitalID, char car_type, int current_time)
 
 bool Organiser::out_to_back(int current_time)
 {
-    Car* c = nullptr; Patient* patient{nullptr};
+    Car* c = nullptr; Patient* patient = nullptr;
     int pickup_time = 0;
         if (out_cars.peek(c, pickup_time))
         {
@@ -155,7 +155,7 @@ bool Organiser::assign_car(int hospitalID, char car_type, int current_time){
 }
 
 bool Organiser::carry_back(int current_time){
-    Car* back{nullptr}; int assign_time;
+    Car* back= nullptr; int assign_time;
     if(out_cars.dequeue(back, assign_time)){
         back_cars.enqueue(back, current_time); return true;
     }
@@ -180,49 +180,69 @@ Organiser::~Organiser(){
 
 
 void Organiser::generate_output_file(const string& output_file_name, int total_simulation_time) {
-    ofstream outfile(output_file_name);
-    if (!outfile.is_open()) {
-        cerr << "Error opening file: " << output_file_name << endl;
+    ofstream outputFile("output.txt");
+
+    if (!outputFile) {
+        cout << "Error opening file for writing!" << endl;
         return;
     }
-    Patient* p;
-    while(finished_requests.dequeue(p)) {
-        outfile << p->get_finish_time() << " " << p->get_pick_time() << " " << p->get_request_time() << " " << p->get_wait_time() << endl;
+    int AllPatients = finished_requests.get_entries();
+        int EP_Patients_Num = 0;
+        int SP_Patients_Num = 0;
+        int NP_Patients_Num = 0;
+        int NC_NUM = 0;
+        int SC_NUM = 0;
+        int TOTAL_CARS = 0;
+        int wait_time_sum=0;
+        int busy_time_sum=0;
+
+    Patient* tempPateint;
+    while (!finished_requests.isEmpty()) {
+        outputFile << "FT\tPID\tQT\tWT" << endl;
+
+        finished_requests.dequeue(tempPateint);
+
+        outputFile << tempPateint->get_finish_time() << '\t' 
+                   << tempPateint->get_patientID() << '\t'
+                   << tempPateint->get_pick_time() << '\t'
+                   << tempPateint->get_wait_time() << endl;
+        wait_time_sum+=tempPateint->get_wait_time();
+        busy_time_sum+=tempPateint->get_finish_time() - tempPateint->get_assign_time();
+        if (tempPateint->get_patient_type() == "EP") {
+            EP_Patients_Num++;
+        } else if (tempPateint->get_patient_type() == "NP") {
+            NP_Patients_Num++;
+        } else if (tempPateint->get_patient_type() == "SP") {
+            SP_Patients_Num++;
+        }
+
+        
+
+        outputFile << "Pateins: " << AllPatients << "\t\t"
+                   << "[NP: " << NP_Patients_Num << ", EP: " << EP_Patients_Num
+                   << ", SP: " << SP_Patients_Num << "]" << endl;
+
+        outputFile << "Hospitals: " << AllPatients;
+
+        for (int i = 0; i < numOf_hospitals; i++) {
+            LinkedQueue<Car*> * NC; LinkedQueue<Car*> * SC;
+            hospitals[i].get_car_lists(NC, SC);
+            NC_NUM += NC->get_entries(); 
+            SC_NUM += SC->get_entries();
+        }
+        TOTAL_CARS = NC_NUM + SC_NUM;
+
+        outputFile << "Cars: " << TOTAL_CARS << "\t\t"
+                   << "[Scars: " << SC_NUM << ", Ncars: " << NC_NUM << "]" << endl;
+
+        outputFile << "Avg wait Time: \n\n" << wait_time_sum/numOf_requests << endl;
+        outputFile << "Avg Busy Time: " << busy_time_sum/numOf_requests << endl;
+        outputFile << "Avg ulitization: " << busy_time_sum/total_simulation_time << endl;
     }
 
-    // Calculate statistics
-    // int total_patients = numOf_requests;
-    // int np_count = count_if(patient_data.begin(), patient_data.end(), [](const PatientData& data) { return data.QT == 1; });
-    // int sp_count = count_if(patient_data.begin(), patient_data.end(), [](const PatientData& data) { return data.QT == 2; });
-    // int ep_count = count_if(patient_data.begin(), patient_data.end(), [](const PatientData& data) { return data.QT == 3; });
+    outputFile.close();
 
-    // int total_hospitals = numOf_hospitals;
-    // int total_cars = out_cars.size() + back_cars.size();
-    // int scar_count = count_if(out_cars.begin(), out_cars.end(), [](Car* car) { return car->get_type() == 'S'; }) +
-    //                  count_if(back_cars.begin(), back_cars.end(), [](Car* car) { return car->get_type() == 'S'; });
-    // int ncar_count = total_cars - scar_count;
-
-    // double avg_wait_time = accumulate(patient_data.begin(), patient_data.end(), 0.0, [](double sum, const PatientData& data) {
-    //     return sum + data.WT;
-    // }) / total_patients;
-
-    // int unserved_ep_count = count_if(patient_data.begin(), patient_data.end(), [](const PatientData& data) {
-    //     return data.QT == 3 && data.WT > 0; // Assuming WT > 0 means not served by home hospital
-    // });
-    // double ep_unserved_percentage = (double)unserved_ep_count / ep_count * 100;
-
-    // double avg_busy_time = 0; // Assuming you have a way to calculate this
-    // double avg_utilization = avg_busy_time / total_simulation_time * 100;
-
-    // // Write statistics to file
-    // outfile << "patients: " << total_patients << " [NP: " << np_count << ", SP: " << sp_count << ", EP: " << ep_count << "]" << endl;
-    // outfile << "Hospitals = " << total_hospitals << endl;
-    // outfile << "cars: " << total_cars << " [SCar: " << scar_count << ", NCar: " << ncar_count << "]" << endl;
-    // outfile << "Avg wait time = " << fixed << setprecision(2) << avg_wait_time << endl;
-    // outfile << "Avg busy time = " << fixed << setprecision(2) << avg_busy_time << endl;
-    // outfile << "Avg utilization = " << fixed << setprecision(2) << avg_utilization << "%" << endl;
-
-    outfile.close();
+    return;
 }
 
 void Organiser::cancel_request(int current_time){
@@ -245,7 +265,7 @@ void Organiser::handle_EP(int owning_hospitalID)
 {
     Patient* ep =hospitals[owning_hospitalID-1].remove_request("EP");
     int to_HID;
-    int numOf_trials{0};
+    int numOf_trials=0;
     while(true)
     {
         if(numOf_trials >= (numOf_hospitals *2)){return;}
@@ -266,12 +286,12 @@ void Organiser::handle_EP(int owning_hospitalID)
 
 void Organiser::main_simulation(bool silent)
 {
-    int step{1}; Patient* ep;
+    int step=1; Patient* ep;
     UI interface;
     while (true)
     {
         cancel_request(step);
-        for(int i{0}; i< numOf_hospitals; i++)
+        for(int i=0; i< numOf_hospitals; i++)
         {
                 ep = hospitals[i].peek_request("EP");
                 if(ep && ep->get_request_time()==step){
@@ -300,7 +320,7 @@ void Organiser::main_simulation(bool silent)
             }
             bool next;
             if(finished_requests.get_entries() == numOf_requests) {
-                // generate output file    
+                generate_output_file("output.txt", step);    
                 return;
             }
             cin>>next;   
