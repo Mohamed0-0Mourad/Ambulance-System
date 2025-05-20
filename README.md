@@ -31,3 +31,29 @@ The simulator loads data from a `.txt` file following a structured format:
 NP 3 1 2 159  → type, time, PID, hospital ID, distance
 SP 2 4 1 588  → includes distance
 EP 13 4 4 433 5 → includes severity
+```
+## 🔁 Simulation Logic
+### At each timestep, a *random number* determines which operation to execute:
+
+* Move patients to the finished list based on type.
+
+* Move cars from free → out → back → free.
+
+* Probability-based logic for operations (e.g., if rand is between 30–40, finish an NP request).
+
+## 🧠 Concepts Covered
+* Object Oriented Programming, handled multiple object classes.
+* C++ inheritance, virtual functions, and destructors.
+
+* File I/O using fstream.
+
+* Queues: linked and priority queues.
+
+* Dynamic memory management and ownership.
+
+* Simulation algorithms with randomization.
+
+--- 
+Designed for coursework in Data Structures and Algorithms (Fall 2024).
+
+
